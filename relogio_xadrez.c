@@ -14,13 +14,13 @@ pthread_t tid;
 struct TempoJogador {
 	int minutos;
 	int segundos;
+	int incremento;
 	char *string_tempo;
 	int bt_foi_press;  
 };
 
 struct Relogio {
 	int tempo_jogo; 
-	int incremento;
 	struct TempoJogador jogador_brancas; 
 	struct TempoJogador jogador_pretas;
 };
@@ -31,31 +31,33 @@ void rt_input(struct TempoJogador tempo_jogador)
 	{
 		if(getchar() == "\n")
 		{
+			tempo_jogador.segundos += tempo_jogador.incremento;
 			tempo_jogador.bt_foi_press = 1;
 		}
 	}
 }
 
-void *initString(int minutos, int segundos)
+void *init_string(int minutos, int segundos)
 {
 	char *str = (char *)malloc(sizeof(char)*CARACTERES_EXIBIDOS);
 	sprintf(str,"0%d:%s%d",minutos,segundos);
 	return str;		
 }
 
-struct Relogio initRelogio(int tempo_jogo, int incremento)
+struct Relogio init_relogio(int tempo_jogo, int incremento)
 {
 	struct Relogio relogio;
 	relogio.tempo_jogo = tempo_jogo; 
-	relogio.incremento = incremento; 
 	struct TempoJogador brancas; 
 	struct TempoJogador pretas;
 	brancas.minutos = relogio.tempo_jogo;
 	brancas.segundos = 0;
-	brancas.string_tempo = initString(brancas.minutos, brancas.segundos);
+	brancas.incremento = incremento;
+	brancas.string_tempo = init_string(brancas.minutos, brancas.segundos);
 	pretas.minutos = relogio.tempo_jogo;
 	pretas.segundos = 0;
-	pretas.string_tempo = initString(pretas.minutos, pretas.segundos);
+	pretas.incremento = incremento;
+	pretas.string_tempo = init_string(pretas.minutos, pretas.segundos);
 	relogio.jogador_brancas = brancas; 
 	relogio.jogador_pretas = pretas;
 	return relogio;
@@ -96,14 +98,13 @@ int comecar_jogo(struct Relogio relogio)
 		pthread_join(tid, NULL);
 		bit_jogador_vez++;
 	}
-
 	jogo_em_andamento = 0; 
 }
 
 int main(void)
 {
 	struct Relogio relogio; 
-	relogio = initRelogio(3,0);
+	relogio = init_relogio(3,0);
 	printf("%s\n",relogio.jogador_brancas.string_tempo);
 	printf("%s\n",relogio.jogador_pretas.string_tempo);
 	return 0;
