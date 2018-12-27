@@ -52,10 +52,10 @@ struct Relogio initRelogio(int tempo_jogo, int incremento)
 	struct TempoJogador pretas;
 	brancas.minutos = relogio.tempo_jogo;
 	brancas.segundos = 0;
-	brancas.string_tempo = initString(brancas.minutos);
+	brancas.string_tempo = initString(brancas.minutos, brancas.segundos);
 	pretas.minutos = relogio.tempo_jogo;
 	pretas.segundos = 0;
-	pretas.string_tempo = initString(pretas.minutos);
+	pretas.string_tempo = initString(pretas.minutos, pretas.segundos);
 	relogio.jogador_brancas = brancas; 
 	relogio.jogador_pretas = pretas;
 	return relogio;
