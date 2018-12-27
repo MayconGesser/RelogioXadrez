@@ -25,14 +25,19 @@ struct Relogio {
 	struct TempoJogador jogador_pretas;
 };
 
-void rt_input(struct TempoJogador tempo_jogador)
+void *rt_input(void *tempo_jogador)
 {
-	while(!tempo_jogador.bt_foi_press)
+	struct TempoJogador *tjgdr = (struct TempoJogador *)tempo_jogador;
+	while(!tjgdr->bt_foi_press)
 	{
-		if(getchar() == "\n")
+		char buf[2];
+		scanf("%s",buf);
+		if(strcmp("c",buf))
 		{
-			tempo_jogador.segundos += tempo_jogador.incremento;
-			tempo_jogador.bt_foi_press = 1;
+			printf("%s\n","ok");
+			fflush(stdout);
+			tjgdr->segundos += tjgdr->incremento;
+			tjgdr->bt_foi_press = 1;
 		}
 	}
 }
@@ -40,7 +45,7 @@ void rt_input(struct TempoJogador tempo_jogador)
 void *init_string(int minutos, int segundos)
 {
 	char *str = (char *)malloc(sizeof(char)*CARACTERES_EXIBIDOS);
-	sprintf(str,"0%d:%s%d",minutos,segundos);
+	sprintf(str,"0%d:%s%d",minutos,(segundos < 10 ? "0" : ""),segundos);
 	return str;		
 }
 
@@ -68,8 +73,11 @@ int acabou_tempo(struct TempoJogador tempo_jogador)
 	return tempo_jogador.minutos == 0 && tempo_jogador.segundos == 0; 
 }
 
-void atualizar_e_imprimir_string_tempo(struct TempoJogador tempo_jogador)
+void atualizar_e_imprimir_tempo(struct TempoJogador tempo_jogador)
 {
+	tempo_jogador.string_tempo = init_string(tempo_jogador.minutos, tempo_jogador.segundos);
+	printf("%s\n",tempo_jogador.string_tempo);
+	fflush(stdout);	
 }
 
 int comecar_jogo(struct Relogio relogio)
@@ -80,7 +88,7 @@ int comecar_jogo(struct Relogio relogio)
 	while(!acabou_tempo(jogador_brancas) || !acabou_tempo(jogador_pretas))
 	{
 		jogador_da_vez = (bit_jogador_vez & 1 ? jogador_brancas : jogador_pretas); //jogadas impares sao pecas brancas, pares sao pretas
-		pthread_create(&tid, NULL, &rt_input, NULL);
+		pthread_create(&tid, NULL, rt_input, (void*)&jogador_da_vez);
 		while(!jogador_da_vez.bt_foi_press)						
 		{
 			sleep(1);
@@ -93,7 +101,7 @@ int comecar_jogo(struct Relogio relogio)
 			{
 				jogador_da_vez.segundos -= 1;	
 			}
-			atualizar_e_imprimir_string_tempo(jogador_da_vez);
+			atualizar_e_imprimir_tempo(jogador_da_vez);
 		}
 		pthread_join(tid, NULL);
 		bit_jogador_vez++;
@@ -107,5 +115,6 @@ int main(void)
 	relogio = init_relogio(3,0);
 	printf("%s\n",relogio.jogador_brancas.string_tempo);
 	printf("%s\n",relogio.jogador_pretas.string_tempo);
+	comecar_jogo(relogio);
 	return 0;
 }
