@@ -36,10 +36,10 @@ void rt_input(struct TempoJogador tempo_jogador)
 	}
 }
 
-void *initString(int minutos)
+void *initString(int minutos, int segundos)
 {
 	char *str = (char *)malloc(sizeof(char)*CARACTERES_EXIBIDOS);
-	sprintf(str,"0%d:00",minutos);
+	sprintf(str,"0%d:%s%d",minutos,segundos);
 	return str;		
 }
 
@@ -68,7 +68,6 @@ int acabou_tempo(struct TempoJogador tempo_jogador)
 
 void atualizar_e_imprimir_string_tempo(struct TempoJogador tempo_jogador)
 {
-	
 }
 
 int comecar_jogo(struct Relogio relogio)
