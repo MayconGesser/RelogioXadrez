@@ -88,6 +88,9 @@ int comecar_jogo(struct Relogio relogio)
 	while(!acabou_tempo(jogador_brancas) || !acabou_tempo(jogador_pretas))
 	{
 		jogador_da_vez = (bit_jogador_vez & 1 ? jogador_brancas : jogador_pretas); //jogadas impares sao pecas brancas, pares sao pretas
+		printf("%s\n",(bit_jogador_vez & 1 ? "brancas jogando" : "pretas jogando"));
+		fflush(stdout);
+		jogador_da_vez.bt_foi_press = 0;
 		pthread_create(&tid, NULL, rt_input, (void*)&jogador_da_vez);
 		while(!jogador_da_vez.bt_foi_press)						
 		{
@@ -104,6 +107,7 @@ int comecar_jogo(struct Relogio relogio)
 			atualizar_e_imprimir_tempo(jogador_da_vez);
 		}
 		pthread_join(tid, NULL);
+
 		bit_jogador_vez++;
 	}
 	jogo_em_andamento = 0; 
